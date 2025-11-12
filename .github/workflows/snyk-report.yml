@@ -47,11 +47,18 @@ jobs:
       - name: Snyk Open Source Scan - send to Snyk
         run: |
           snyk test \
-          --report \
           --all-projects \
           --debug --log-level=trace \
           --remote-repo-url="${TARGET}" \
           --target-reference="${BRANCH}"
+        continue-on-error: true
 
-          snyk monitor --all-projects --org=${SNYK_ORG}
+
+      - name: Snyk Open Source Monitor
+        run: |
+          snyk monitor \ 
+          --all-projects \
+          --org=${SNYK_ORG} \
+          --remote-repo-url="${TARGET}" \
+          --target-reference="${BRANCH}"
         continue-on-error: true
