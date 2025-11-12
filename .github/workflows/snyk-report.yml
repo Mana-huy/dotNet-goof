@@ -53,5 +53,5 @@ jobs:
           --remote-repo-url="${TARGET}" \
           --target-reference="${BRANCH}"
 
-          snyk monitor --all-projects --org=13331b26-5f54-4083-8cdc-f9d51db27b76
+          snyk monitor --all-projects --org=${SNYK_ORG}
         continue-on-error: true
