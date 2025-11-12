@@ -1,0 +1,55 @@
+name: Snyk Security Reports
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+env:
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  SNYK_ORG: ${{ secrets.SNYK_ORG }}
+  TARGET: ${{ secrets.TARGET || format('github.com/{0}', github.repository) }}
+  BRANCH: ${{ secrets.BRANCH || github.ref_name }}
+
+jobs:
+  snyk-report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth "${SNYK_TOKEN}"
+
+      # ---- Snyk Code Scan ----
+      - name: Snyk Code Scan - send to Snyk
+        run: |
+          snyk code test \
+          --report \
+          --remote-repo-url="${TARGET}" \
+          --project-name="${TARGET}#Code" \
+          --target-reference="${BRANCH}"
+        continue-on-error: true
+
+      # ---- Snyk Open Source Scan ----
+      - name: Snyk Open Source Scan - send to Snyk
+        run: |
+          snyk test \
+          --report \
+          --all-projects \
+          --debug --log-level=trace \
+          --remote-repo-url="${TARGET}" \
+          --target-reference="${BRANCH}"
+        continue-on-error: true
