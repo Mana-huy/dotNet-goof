@@ -50,6 +50,7 @@ jobs:
           --report \
           --all-projects \
           --debug --log-level=trace \
+          --org="${SNYK_ORG}" \
           --remote-repo-url="${TARGET}" \
           --target-reference="${BRANCH}"
 
