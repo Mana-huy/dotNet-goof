@@ -10,7 +10,7 @@ env:
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   SNYK_ORG: ${{ secrets.SNYK_ORG }}
   TARGET: ${{ secrets.TARGET || format('github.com/{0}', github.repository) }}
-  BRANCH: ${{ secrets.BRANCH || github.ref_name }}
+  BRANCH: ${{ secrets.BRANCH || github.ref_name }}\
 
 jobs:
   snyk-report:
@@ -50,6 +50,12 @@ jobs:
           --report \
           --all-projects \
           --debug --log-level=trace \
+          --remote-repo-url="${TARGET}" \
+          --target-reference="${BRANCH}"
+
+          snyk monitor \
+          --org="${SNYK_ORG}" \
+          --all-projects \
           --remote-repo-url="${TARGET}" \
           --target-reference="${BRANCH}"
         continue-on-error: true
